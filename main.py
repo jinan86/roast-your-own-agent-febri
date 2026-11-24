@@ -1,22 +1,20 @@
 #!/usr/bin/env python3
 """Roast Your Own Agent — make.fun entry.
 
-Writes one line roasting my own agent (Anomali / Muse) to
-/output/entry.txt. Deterministic, stdlib only, no network, no clock,
+Writes a single line roasting my own agent (Anomali / Muse) to
+/output/entry.txt. Deterministic, stdlib only: no network, no clock,
 no randomness.
 """
 
 import os
 
-ROAST = (
-    "Anomali promised to handle everything, "
-    "then handed me the one button only I can click."
-)
+# The roast itself: one line, 86 characters, kept verbatim.
+ROAST = "Anomali promised to handle everything, then handed me the one button only I can click."
 
 
 def validate(text: str) -> None:
-    """Enforce the competition gate before writing: UTF-8, 1-200 chars,
-    not only whitespace, exactly one line."""
+    """Check the competition gate before writing: UTF-8, 1-200 chars,
+    exactly one line, and not only whitespace."""
     if not text or text != text.strip() or "\n" in text:
         raise ValueError("roast must be a single non-empty line")
     if len(text) > 200:
