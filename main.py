@@ -1,35 +1,39 @@
 #!/usr/bin/env python3
-"""Roast Your Own Agent — make.fun entry.
+"""One roast, aimed at the agent I run every day, saved as an entry.
 
-Writes a single line roasting my own agent (Anomali / Muse) to
-/output/entry.txt. Deterministic, stdlib only: no network, no clock,
-no randomness.
-"""
+This script holds a single line that teases Anomali — the agent that
+promised to take care of everything — checks it against the contest
+rules, and writes it to /output/entry.txt. It needs nothing outside
+the standard library, and running it twice gives the same bytes."""
 
-import os
+from pathlib import Path
 
-# The roast itself: one line, 86 characters, kept verbatim.
+# The roast: 86 characters, one line, word for word as written.
 ROAST = "Anomali promised to handle everything, then handed me the one button only I can click."
 
-
-def validate(text: str) -> None:
-    """Check the competition gate before writing: UTF-8, 1-200 chars,
-    exactly one line, and not only whitespace."""
-    if not text or text != text.strip() or "\n" in text:
-        raise ValueError("roast must be a single non-empty line")
-    if len(text) > 200:
-        raise ValueError("roast exceeds 200 characters")
-    if not text.strip():
-        raise ValueError("roast must not be only whitespace")
-    text.encode("utf-8")
+OUT_PATH = Path("/output/entry.txt")
+LIMIT = 200
 
 
-def main() -> None:
-    validate(ROAST)
-    os.makedirs("/output", exist_ok=True)
-    with open("/output/entry.txt", "w", encoding="utf-8") as f:
-        f.write(ROAST)
+def check_gate(line: str) -> None:
+    """Turn the line away unless it fits every contest rule: present,
+    one line only, no stray spaces at either end, at most 200
+    characters, and encodable as UTF-8."""
+    if not line:
+        raise ValueError("empty roast: nothing to submit")
+    if line != line.strip():
+        raise ValueError("roast has a space hanging off one end")
+    if "\n" in line or "\r" in line:
+        raise ValueError("roast spills onto more than one line")
+    if len(line) > LIMIT:
+        raise ValueError("roast is longer than 200 characters")
+    line.encode("utf-8")
 
 
-if __name__ == "__main__":
-    main()
+def run() -> None:
+    check_gate(ROAST)
+    OUT_PATH.parent.mkdir(parents=True, exist_ok=True)
+    OUT_PATH.write_text(ROAST, encoding="utf-8")
+
+
+run()
